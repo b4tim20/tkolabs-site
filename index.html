@@ -1,0 +1,2522 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' mailto:">
+<title>TKO Labs — Security Research &amp; Bug Bounty</title>
+<meta name="description" content="TKO Labs runs paid bug bounty programs and smart-contract audits for the TKO stack, with hash-linked evidence behind every decision.">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="author" content="TKO Labs">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="theme-color" content="#080a09">
+<meta name="color-scheme" content="dark">
+<link rel="canonical" href="https://tkolabs.us/">
+<noscript><style>.nav-toggle{display:none!important}.filter-bar{display:none!important}.copy-btn{display:none!important}@media (max-width:1080px){#mobile-nav[hidden]{display:block!important}}</style></noscript>
+
+<meta property="og:site_name" content="TKO Labs">
+<meta property="og:locale" content="en_US">
+<meta property="og:type" content="website">
+<meta property="og:title" content="TKO Labs — Security Research &amp; Bug Bounty">
+<meta property="og:description" content="Paid bug bounty programs and smart-contract audits for the TKO stack. Every decision is written to a hash-linked evidence chain.">
+<meta property="og:url" content="https://tkolabs.us/">
+<meta property="og:image" content="https://tkolabs.us/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="TKO Labs — security work that can be checked. Paid bug bounties, smart-contract audits, and hash-linked evidence.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="TKO Labs — Security Research &amp; Bug Bounty">
+<meta name="twitter:description" content="Paid bug bounty programs and smart-contract audits for the TKO stack. Every decision is written to a hash-linked evidence chain.">
+<meta name="twitter:image" content="https://tkolabs.us/og-image.png">
+<meta name="twitter:image:alt" content="TKO Labs — security work that can be checked.">
+
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://tkolabs.us/#org",
+      "name": "TKO Labs",
+      "url": "https://tkolabs.us/",
+      "logo": "https://tkolabs.us/apple-touch-icon.png",
+      "email": "security@tkolabs.us",
+      "description": "TKO Labs is the security research practice of Persistent Solutions LLC. It runs paid bug bounty programs and smart-contract audits for the TKO stack, with hash-linked evidence behind every decision.",
+      "parentOrganization": {
+        "@type": "Organization",
+        "name": "Persistent Solutions LLC",
+        "url": "https://persistent-solutions.com/"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "St. Louis",
+        "addressRegion": "MO",
+        "addressCountry": "US"
+      },
+      "sameAs": ["https://persistent-solutions.com/"],
+      "knowsAbout": [
+        "smart contract security",
+        "bug bounty programs",
+        "security audits",
+        "responsible disclosure",
+        "evidence integrity"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://tkolabs.us/#website",
+      "url": "https://tkolabs.us/",
+      "name": "TKO Labs",
+      "publisher": { "@id": "https://tkolabs.us/#org" }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Who can submit a finding?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Anyone. You do not need a prior relationship with TKO Labs. Send a clear summary with reproduction steps and the program you are reporting under."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is in scope?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Each program card names its target surface. The core program covers the web application, API, authentication, and deployment configuration. The token and vault programs cover their contracts. Testing must not disrupt live service or third-party systems."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do I need PCENT to submit?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "You need the review activation fee published on the program: 1,000 PCENT, or 500 PCENT for JRTS. Staking is optional. It changes queue priority and payout terms but is not required to file a report."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How are payouts made?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Accepted findings are paid in PCENT under the program terms. The platform records the payout transaction against the submission, and the decision remains in the evidence chain."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Are these mainnet contracts?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. The addresses published here are Sepolia testnet deployments. Testnet assets have no market value. Do not send mainnet funds."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How should I send a sensitive report?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Send a summary first and ask for a secure channel. We will confirm scope and the channel before you share exploit details. Never send private keys, seed phrases, or third-party personal data."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What if my report is rejected?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "You receive a written reason. The rejection is appended to the evidence chain. If you have new reproduction evidence, reply to the thread and we will re-open triage."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do you take private audits?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Private audits are scoped and quoted separately. Start with a short email describing the codebase, timeline, and what you need reviewed."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+
+<style>
+/* ==========================================================================
+   TKO Labs — site system
+   Palette: ink ground, bone text, copper accent, patina for verified states.
+   Type: editorial serif for display, neutral sans for running text, mono for
+   labels and data. No external fonts, scripts, or images.
+   ========================================================================== */
+
+:root {
+  color-scheme: dark;
+  --ink: #080a09;
+  --ink-2: #0b0e0c;
+  --panel: #111512;
+  --panel-2: #161b17;
+  --bone: #e9e5d9;
+  --bone-2: #d2cdbf;
+  --muted: #a3a89b;
+  --dim: #8a9185;
+  --copper: #c9a063;
+  --copper-2: #e2c38c;
+  --copper-deep: #8f6f3d;
+  --patina: #7fb8a6;
+  --patina-2: #a5d4c5;
+  --alert: #d47b68;
+  --line: rgba(201, 160, 99, 0.16);
+  --line-2: rgba(201, 160, 99, 0.34);
+  --line-cool: rgba(127, 184, 166, 0.22);
+  --max: 1180px;
+  --gutter: clamp(18px, 4vw, 40px);
+  --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, "Times New Roman", serif;
+  --sans: "Avenir Next", Avenir, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  background: var(--ink);
+  scroll-behavior: smooth;
+  scroll-padding-top: 96px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--ink);
+  color: var(--bone);
+  font: 400 1rem/1.7 var(--sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  isolation: isolate;
+  overflow-x: clip;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+  opacity: 0.045;
+  mix-blend-mode: screen;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  top: -360px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1280px, 100%);
+  height: 820px;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(201, 160, 99, 0.13), transparent 62%),
+    radial-gradient(ellipse at 78% 58%, rgba(127, 184, 166, 0.06), transparent 54%);
+}
+
+::selection { background: var(--copper); color: var(--ink); }
+
+h1, h2, h3, h4, p { margin: 0; }
+h1, h2, h3, h4 {
+  font-family: var(--serif);
+  font-weight: 400;
+  color: var(--bone);
+  text-wrap: balance;
+}
+p { text-wrap: pretty; }
+a { color: var(--copper-2); text-decoration: none; }
+a:hover { color: var(--copper); text-decoration: underline; text-underline-offset: 4px; }
+img, svg { display: block; max-width: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+ul, ol { margin: 0; padding: 0; }
+[hidden] { display: none !important; }
+
+:focus-visible {
+  outline: 2px solid var(--copper);
+  outline-offset: 3px;
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: 12px;
+  z-index: 300;
+  padding: 11px 16px;
+  background: var(--copper);
+  color: var(--ink);
+  font: 600 0.72rem/1 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.skip-link:focus { left: 12px; }
+
+.wrap {
+  width: 100%;
+  max-width: var(--max);
+  margin-inline: auto;
+  padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
+}
+
+.mono { font-family: var(--mono); }
+
+.label {
+  font: 500 0.64rem/1.25 var(--mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+/* ---------- Top line ---------- */
+
+.topline {
+  border-bottom: 1px solid rgba(201, 160, 99, 0.12);
+  background: #060807;
+}
+.topline-inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 24px;
+  padding-block: 7px;
+  font: 0.58rem/1.5 var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.topline a { color: var(--copper); }
+.topline a:hover { color: var(--copper-2); text-decoration: none; }
+
+/* ---------- Header ---------- */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(8, 10, 9, 0.86);
+  border-bottom: 1px solid transparent;
+  backdrop-filter: blur(16px) saturate(130%);
+  -webkit-backdrop-filter: blur(16px) saturate(130%);
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+.site-header.is-scrolled {
+  background: rgba(8, 10, 9, 0.96);
+  border-bottom-color: var(--line);
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  gap: clamp(14px, 2.6vw, 32px);
+  min-height: 76px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-right: auto;
+  color: var(--bone);
+  text-decoration: none;
+}
+.brand:hover { color: var(--bone); text-decoration: none; }
+.brand-mark { width: 34px; height: 34px; flex: none; color: var(--copper); }
+.brand-name {
+  display: block;
+  font-family: var(--serif);
+  font-size: 1.34rem;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.brand-name em { font-style: normal; color: var(--copper); }
+.brand-sub {
+  display: block;
+  margin-top: 5px;
+  font: 0.56rem/1 var(--mono);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.desktop-nav { display: flex; align-items: center; gap: clamp(10px, 1.5vw, 22px); }
+.desktop-nav a {
+  position: relative;
+  padding: 12px 0;
+  color: var(--muted);
+  font: 0.66rem/1 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.desktop-nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 3px;
+  height: 1px;
+  background: var(--copper);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.2s ease;
+}
+.desktop-nav a:hover,
+.desktop-nav a.is-active { color: var(--bone); text-decoration: none; }
+.desktop-nav a:hover::after,
+.desktop-nav a.is-active::after { transform: scaleX(1); }
+
+.nav-toggle {
+  display: none;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line-2);
+  background: transparent;
+  place-items: center;
+  flex: none;
+}
+.nav-toggle-lines,
+.nav-toggle-lines::before,
+.nav-toggle-lines::after {
+  display: block;
+  width: 18px;
+  height: 1px;
+  background: var(--copper-2);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.nav-toggle-lines { position: relative; }
+.nav-toggle-lines::before,
+.nav-toggle-lines::after { content: ""; position: absolute; left: 0; }
+.nav-toggle-lines::before { top: -6px; }
+.nav-toggle-lines::after { top: 6px; }
+.nav-toggle[aria-expanded="true"] .nav-toggle-lines { background: transparent; }
+.nav-toggle[aria-expanded="true"] .nav-toggle-lines::before { transform: translateY(6px) rotate(45deg); }
+.nav-toggle[aria-expanded="true"] .nav-toggle-lines::after { transform: translateY(-6px) rotate(-45deg); }
+
+.mobile-nav {
+  border-top: 1px solid var(--line);
+  background: rgba(8, 10, 9, 0.98);
+  max-height: calc(100vh - 68px);
+  max-height: calc(100dvh - 68px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.mobile-nav nav {
+  display: grid;
+  gap: 2px;
+  padding-block: 14px 18px;
+}
+.mobile-nav a {
+  display: flex;
+  align-items: center;
+  min-height: 46px;
+  padding: 0 2px;
+  border-bottom: 1px solid rgba(201, 160, 99, 0.09);
+  color: var(--bone-2);
+  font: 0.72rem/1 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.mobile-nav a:hover { color: var(--copper-2); text-decoration: none; }
+.mobile-nav a.btn-primary {
+  color: var(--ink);
+  border-color: var(--copper);
+  font-weight: 600;
+}
+.mobile-nav a.btn-primary:hover {
+  color: var(--ink);
+  border-color: var(--copper-2);
+}
+.mobile-nav .btn { margin-top: 12px; }
+.mobile-nav .mobile-email {
+  margin-top: 8px;
+  border: 0;
+  color: var(--dim);
+  font-size: 0.64rem;
+  letter-spacing: 0.06em;
+  text-transform: none;
+}
+
+/* ---------- Buttons ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 46px;
+  padding: 12px 20px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  font: 600 0.72rem/1 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.btn:hover { text-decoration: none; }
+.btn svg { width: 15px; height: 15px; flex: none; }
+.btn-primary { background: var(--copper); border-color: var(--copper); color: var(--ink); }
+.btn-primary:hover { background: var(--copper-2); border-color: var(--copper-2); color: var(--ink); }
+.btn-primary:focus-visible { outline-color: var(--bone); }
+.btn-ghost { background: transparent; border-color: var(--line-2); color: var(--bone); }
+.btn-ghost:hover { border-color: var(--copper); color: var(--copper-2); }
+.btn-quiet { background: transparent; border-color: transparent; color: var(--muted); }
+.btn-quiet:hover { color: var(--bone); }
+.btn-small { min-height: 40px; padding: 10px 15px; font-size: 0.64rem; }
+
+/* ---------- Hero ---------- */
+
+.hero { padding-block: clamp(54px, 8vw, 104px) clamp(62px, 9vw, 112px); }
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.28fr) minmax(320px, 0.82fr);
+  gap: clamp(36px, 6vw, 80px);
+  align-items: end;
+}
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--copper);
+  font: 500 0.64rem/1.4 var(--mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.eyebrow-rule { width: 32px; height: 1px; background: var(--copper); flex: none; }
+h1 {
+  margin-top: 20px;
+  font-size: clamp(2.75rem, 6.5vw, 5.5rem);
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+}
+h1 em { font-style: italic; color: var(--copper-2); }
+.lead {
+  margin-top: 24px;
+  max-width: 60ch;
+  color: var(--bone-2);
+  font-size: clamp(1rem, 1.35vw, 1.12rem);
+  line-height: 1.75;
+}
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; }
+.hero-note {
+  display: flex;
+  gap: 10px;
+  margin-top: 26px;
+  max-width: 60ch;
+  color: var(--dim);
+  font-size: 0.8rem;
+  line-height: 1.65;
+}
+.marker {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  margin-top: 0.58em;
+  transform: rotate(45deg);
+  background: var(--patina);
+}
+
+/* ---------- Ledger card ---------- */
+
+.ledger {
+  position: relative;
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--panel-2), var(--panel));
+  padding: clamp(20px, 2.6vw, 28px);
+  min-width: 0;
+}
+.ledger::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(201, 160, 99, 0.06);
+  pointer-events: none;
+}
+.ledger-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 8px;
+  border: 1px solid var(--line-2);
+  color: var(--copper-2);
+  font: 500 0.56rem/1 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.dot {
+  width: 5px;
+  height: 5px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--patina);
+}
+.ledger-rows {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin: 0;
+  padding: 0;
+}
+.ledger-rows > div { display: contents; }
+.ledger-rows dt,
+.ledger-rows dd {
+  margin: 0;
+  padding: 11px 0;
+  border-bottom: 1px solid rgba(201, 160, 99, 0.1);
+}
+.ledger-rows dt {
+  color: var(--dim);
+  font: 0.62rem/1.4 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.ledger-rows dd {
+  color: var(--bone);
+  text-align: right;
+  font: 0.76rem/1.4 var(--mono);
+}
+.ledger-rows dd em { font-style: normal; color: var(--copper-2); }
+.chain {
+  position: relative;
+  display: grid;
+  gap: 7px;
+  margin-top: 22px;
+  padding-left: 17px;
+}
+.chain::before {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 14px;
+  bottom: 14px;
+  width: 1px;
+  background: var(--line-cool);
+}
+.chain-link {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--line-cool);
+  background: rgba(127, 184, 166, 0.035);
+  min-width: 0;
+}
+.chain-link::before {
+  content: "";
+  position: absolute;
+  left: -16px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  transform: translateY(-50%) rotate(45deg);
+  background: var(--panel);
+  border: 1px solid var(--patina);
+}
+.chain-state {
+  color: var(--patina-2);
+  font: 500 0.58rem/1.3 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.chain-link code {
+  color: var(--muted);
+  font: 0.64rem/1.3 var(--mono);
+  white-space: nowrap;
+}
+.ledger-foot {
+  margin-top: 16px;
+  color: var(--dim);
+  font-size: 0.66rem;
+  line-height: 1.6;
+}
+.ledger-foot .mono { color: var(--copper-deep); }
+
+/* ---------- Principles ---------- */
+
+.principles {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.012);
+}
+.principles-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(22px, 3.2vw, 44px);
+  padding-block: clamp(28px, 4vw, 42px);
+}
+.principle { min-width: 0; }
+.p-mark { width: 18px; height: 1px; margin-bottom: 14px; background: var(--copper); }
+.principle h3 {
+  font-size: 1.02rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+.principle p {
+  margin-top: 6px;
+  color: var(--dim);
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+/* ---------- Sections ---------- */
+
+.section {
+  padding-block: clamp(64px, 8vw, 104px);
+  border-top: 1px solid var(--line);
+}
+.section-head {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: clamp(14px, 3vw, 32px);
+  align-items: start;
+  margin-bottom: clamp(34px, 5vw, 56px);
+}
+.sec-no {
+  padding-top: 0.5rem;
+  color: var(--copper);
+  font: 500 0.62rem/1.4 var(--mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.sec-title { max-width: 820px; min-width: 0; }
+h2 {
+  font-size: clamp(1.9rem, 3.6vw, 3rem);
+  line-height: 1.06;
+  letter-spacing: -0.032em;
+}
+.sec-title p {
+  margin-top: 16px;
+  max-width: 64ch;
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.72;
+}
+.section-note {
+  margin-top: 26px;
+  max-width: 82ch;
+  padding-left: 14px;
+  border-left: 1px solid var(--line-2);
+  color: var(--dim);
+  font-size: 0.72rem;
+  line-height: 1.7;
+}
+.section-note code {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Services ---------- */
+
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  border: 1px solid var(--line);
+  background: var(--line);
+}
+.service {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  padding: clamp(22px, 3vw, 32px);
+  background: var(--panel);
+}
+.service-icon { width: 30px; height: 30px; margin-bottom: 6px; color: var(--copper); }
+.service h3 { font-size: 1.32rem; line-height: 1.2; }
+.service p { color: var(--muted); font-size: 0.88rem; line-height: 1.7; }
+.service-foot {
+  margin-top: auto;
+  padding-top: 18px;
+  color: var(--copper);
+  font: 500 0.6rem/1 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ---------- Programs ---------- */
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 22px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 8px 12px;
+  border: 1px solid var(--line-2);
+  background: transparent;
+  color: var(--muted);
+  font: 500 0.62rem/1 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.chip span { margin-left: 7px; opacity: 0.65; font-size: 0.56rem; }
+.chip:hover { color: var(--bone); border-color: var(--copper); }
+.chip[aria-pressed="true"] {
+  background: var(--copper);
+  border-color: var(--copper);
+  color: var(--ink);
+}
+.chip[aria-pressed="true"] span { opacity: 0.8; }
+.filter-count {
+  margin-left: auto;
+  color: var(--dim);
+  font: 0.6rem/1.4 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.program-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.program {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  min-width: 0;
+  padding: clamp(20px, 2.6vw, 28px);
+  border: 1px solid var(--line);
+  background: var(--panel);
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+.program:hover { border-color: var(--line-2); background: var(--panel-2); }
+.program-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.program-top .mono {
+  color: var(--dim);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+}
+.tag {
+  padding: 5px 7px;
+  border: 1px solid var(--line-2);
+  color: var(--copper-2);
+  font: 500 0.56rem/1 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.tag-platform { color: var(--patina-2); border-color: var(--line-cool); }
+.tag-token { color: var(--bone-2); }
+.program h3 { font-size: 1.42rem; line-height: 1.15; }
+.program p { color: var(--muted); font-size: 0.87rem; line-height: 1.68; }
+.program-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 2px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.program-stats dt {
+  margin-bottom: 6px;
+  color: var(--dim);
+  font: 0.56rem/1.2 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.program-stats dd { margin: 0; color: var(--copper-2); font: 500 1.15rem/1.2 var(--mono); }
+.program-stats div:last-child dd {
+  padding-top: 0.2rem;
+  color: var(--bone-2);
+  font-size: 0.8rem;
+}
+.program-addr {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.program-addr code {
+  flex: 1 1 170px;
+  min-width: 0;
+  color: var(--muted);
+  font: 0.66rem/1.5 var(--mono);
+  overflow-wrap: anywhere;
+}
+.copy-btn {
+  min-height: 32px;
+  padding: 6px 9px;
+  border: 1px solid var(--line-2);
+  background: transparent;
+  color: var(--copper-2);
+  font: 500 0.56rem/1 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.copy-btn:hover { color: var(--bone); border-color: var(--copper); }
+.copy-btn.is-copied { color: var(--patina-2); border-color: var(--patina); }
+.report-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  color: var(--copper-2);
+  font: 500 0.64rem/1.3 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.report-link:hover { color: var(--copper); text-decoration: none; }
+.report-link svg { width: 15px; height: 15px; flex: none; transition: transform 0.2s ease; }
+.report-link:hover svg { transform: translateX(4px); }
+
+/* ---------- Method ---------- */
+
+.method-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: clamp(32px, 5vw, 64px);
+  align-items: start;
+}
+.steps { list-style: none; border-top: 1px solid var(--line); }
+.steps li {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: 14px;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--line);
+}
+.step-no { padding-top: 0.3rem; color: var(--copper); font: 500 0.64rem/1 var(--mono); letter-spacing: 0.1em; }
+.steps h3 { margin-bottom: 6px; font-size: 1.22rem; line-height: 1.2; }
+.steps p { color: var(--muted); font-size: 0.87rem; line-height: 1.7; }
+.severity {
+  padding: clamp(20px, 2.6vw, 26px);
+  border: 1px solid var(--line);
+  background: var(--panel);
+  min-width: 0;
+}
+.severity > .label { display: block; margin-bottom: 16px; color: var(--copper); }
+.table-wrap { max-width: 100%; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 0.79rem; }
+th {
+  padding: 0 0 10px;
+  border-bottom: 1px solid var(--line);
+  color: var(--dim);
+  text-align: left;
+  font: 0.56rem/1.2 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+td {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  line-height: 1.55;
+  vertical-align: top;
+}
+td:first-child { padding-right: 14px; color: var(--bone-2); white-space: nowrap; }
+.sev {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 7px;
+  transform: rotate(45deg);
+  background: var(--dim);
+}
+.sev-critical { background: var(--alert); }
+.sev-high { background: var(--copper); }
+.sev-medium { background: var(--patina); }
+.sev-low { background: var(--dim); }
+.severity-note { margin-top: 16px; color: var(--dim); font-size: 0.7rem; line-height: 1.6; }
+
+/* ---------- Evidence ---------- */
+
+.evidence-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(28px, 5vw, 60px);
+  align-items: start;
+}
+.evidence-copy p { color: var(--muted); font-size: 0.94rem; line-height: 1.75; }
+.checks { display: grid; gap: 11px; margin-top: 22px; list-style: none; }
+.checks li {
+  position: relative;
+  padding-left: 22px;
+  color: var(--bone-2);
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+.checks li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--patina);
+  transform: rotate(45deg);
+}
+.callout {
+  display: flex;
+  gap: 12px;
+  margin-top: 26px;
+  padding: 16px 18px;
+  border-left: 2px solid var(--copper);
+  background: rgba(201, 160, 99, 0.045);
+}
+.callout-mark { width: 8px; height: 8px; flex: none; margin-top: 0.5em; transform: rotate(45deg); background: var(--copper); }
+.callout p { color: var(--muted); font-size: 0.8rem; line-height: 1.65; }
+.callout strong { color: var(--bone); font-weight: 600; }
+.code-card {
+  margin: 0;
+  min-width: 0;
+  border: 1px solid var(--line);
+  background: #0b0e0c;
+}
+.code-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+.code-head .label { color: var(--copper); }
+.code-head .mono { color: var(--dim); font-size: 0.58rem; letter-spacing: 0.08em; }
+.code-card pre {
+  max-width: 100%;
+  margin: 0;
+  padding: 18px 16px;
+  overflow-x: auto;
+  color: var(--bone-2);
+  font: 0.76rem/1.7 var(--mono);
+  tab-size: 2;
+}
+.code-card code { font-family: inherit; }
+.k { color: var(--copper-2); }
+.s { color: var(--patina-2); }
+.n { color: var(--bone); }
+.code-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-top: 1px solid var(--line);
+  color: var(--patina-2);
+  font: 500 0.6rem/1 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.code-card figcaption {
+  padding: 0 16px 16px;
+  color: var(--dim);
+  font-size: 0.66rem;
+  line-height: 1.6;
+}
+
+/* ---------- Staking ---------- */
+
+.tier-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  border: 1px solid var(--line);
+  background: var(--line);
+}
+.tier {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  padding: clamp(22px, 3vw, 30px);
+  background: var(--panel);
+}
+.tier-name {
+  color: var(--copper);
+  font: 500 0.62rem/1 var(--mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.tier h3 { font-size: clamp(1.5rem, 2.5vw, 2rem); line-height: 1; letter-spacing: -0.02em; }
+.tier h3 span {
+  display: block;
+  margin-top: 8px;
+  color: var(--dim);
+  font: 0.58rem/1 var(--mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.ticks {
+  display: grid;
+  gap: 9px;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+.ticks li {
+  position: relative;
+  padding-left: 20px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+.ticks li::before {
+  content: "\2713";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--patina);
+  font-size: 0.76rem;
+}
+
+/* ---------- Contracts ---------- */
+
+.address-list { list-style: none; border-top: 1px solid var(--line); }
+.address-row {
+  display: grid;
+  grid-template-columns: minmax(160px, 0.9fr) minmax(0, 1.7fr) auto auto;
+  gap: 16px;
+  align-items: center;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+}
+.address-name { display: flex; gap: 12px; align-items: baseline; min-width: 0; }
+.address-name > .mono { color: var(--dim); font-size: 0.58rem; }
+.address-name h3 { font-size: 1.04rem; line-height: 1.2; }
+.address-name p {
+  margin-top: 3px;
+  color: var(--dim);
+  font: 0.56rem/1.2 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.address {
+  min-width: 0;
+  color: var(--muted);
+  font: 0.74rem/1.5 var(--mono);
+  overflow-wrap: anywhere;
+}
+.address-actions { display: flex; align-items: center; gap: 6px; justify-self: end; }
+.icon-link {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--line-2);
+  color: var(--muted);
+}
+.icon-link:hover { border-color: var(--copper); color: var(--copper-2); }
+.icon-link svg { width: 13px; height: 13px; }
+
+/* ---------- Research notes ---------- */
+
+.note-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(24px, 4vw, 44px);
+}
+.note {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--line-2);
+}
+.note .label { color: var(--copper); }
+.note h3 { font-size: 1.3rem; line-height: 1.2; }
+.note p { color: var(--muted); font-size: 0.85rem; line-height: 1.7; }
+.note > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 8px;
+  color: var(--copper-2);
+  font: 500 0.62rem/1.3 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.note > a:hover { color: var(--copper); text-decoration: none; }
+.note > a svg { width: 14px; height: 14px; flex: none; }
+
+/* ---------- FAQ ---------- */
+
+.faq { border-top: 1px solid var(--line); }
+.faq details { border-bottom: 1px solid var(--line); }
+.faq summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 58px;
+  padding: 16px 0;
+  color: var(--bone);
+  font-size: 0.96rem;
+  font-weight: 500;
+  line-height: 1.45;
+  cursor: pointer;
+  list-style: none;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary:hover { color: var(--copper-2); }
+.faq-mark { position: relative; width: 14px; height: 14px; flex: none; }
+.faq-mark::before,
+.faq-mark::after {
+  content: "";
+  position: absolute;
+  background: var(--copper);
+  transition: transform 0.2s ease;
+}
+.faq-mark::before { left: 0; top: 6px; width: 14px; height: 1px; }
+.faq-mark::after { left: 6px; top: 0; width: 1px; height: 14px; }
+details[open] .faq-mark::after { transform: rotate(90deg); }
+.faq-body { max-width: 76ch; padding-bottom: 20px; }
+.faq-body p { color: var(--muted); font-size: 0.88rem; line-height: 1.75; }
+.faq-body a { color: var(--copper-2); text-decoration: underline; text-underline-offset: 3px; }
+.faq-foot { margin-top: 20px; color: var(--dim); font-size: 0.78rem; line-height: 1.6; }
+.faq-foot a { color: var(--copper-2); }
+
+/* ---------- Contact ---------- */
+
+.contact { padding-block: clamp(56px, 8vw, 92px); border-top: 1px solid var(--line); }
+.contact-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1.18fr) minmax(280px, 0.82fr);
+  gap: clamp(30px, 5vw, 64px);
+  align-items: start;
+  padding: clamp(26px, 5vw, 56px);
+  border: 1px solid var(--line-2);
+  border-top: 2px solid var(--copper);
+  background: linear-gradient(180deg, rgba(201, 160, 99, 0.06), var(--panel) 46%);
+}
+.contact-copy h2 { margin-top: 14px; }
+.contact-copy > p {
+  margin-top: 16px;
+  max-width: 60ch;
+  color: var(--muted);
+  font-size: 0.96rem;
+  line-height: 1.75;
+}
+.contact-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  padding-left: clamp(20px, 3vw, 32px);
+  border-left: 1px solid var(--line);
+}
+.contact-email {
+  color: var(--copper-2);
+  font: 500 clamp(0.88rem, 1.6vw, 1.05rem)/1.45 var(--mono);
+  overflow-wrap: anywhere;
+}
+.contact-meta { display: grid; gap: 11px; margin: 0; }
+.contact-meta dt {
+  color: var(--dim);
+  font: 0.56rem/1.2 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.contact-meta dd { margin: 2px 0 0; color: var(--bone-2); font-size: 0.78rem; line-height: 1.5; }
+.contact-meta a { color: var(--copper-2); }
+.contact-note {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  color: var(--dim);
+  font-size: 0.66rem;
+  line-height: 1.6;
+}
+.noscript {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--line-2);
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+/* ---------- Footer ---------- */
+
+.site-footer { border-top: 1px solid var(--line); background: #060807; }
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 0.7fr 0.8fr;
+  gap: clamp(28px, 5vw, 60px);
+  padding-block: clamp(36px, 5vw, 56px);
+}
+.footer-brand p {
+  margin-top: 14px;
+  max-width: 36ch;
+  color: var(--dim);
+  font-size: 0.76rem;
+  line-height: 1.65;
+}
+.footer-col .label { display: block; margin-bottom: 14px; }
+.footer-col nav { display: grid; gap: 9px; }
+.footer-col a { color: var(--muted); font-size: 0.76rem; line-height: 1.5; }
+.footer-col a:hover { color: var(--copper-2); text-decoration: none; }
+.footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px 24px;
+  padding-block: 18px 26px;
+  border-top: 1px solid var(--line);
+  color: var(--dim);
+  font-size: 0.64rem;
+  line-height: 1.65;
+}
+.footer-bottom p { margin: 0; }
+.footer-bottom p:last-child { max-width: 72ch; }
+
+/* ---------- Report dialog ---------- */
+
+dialog:not([open]) { display: none; }
+dialog {
+  width: min(720px, calc(100vw - 28px));
+  max-height: min(90vh, 880px);
+  margin: auto;
+  padding: 0;
+  overflow: auto;
+  border: 1px solid var(--line-2);
+  border-radius: 2px;
+  background: var(--panel);
+  color: var(--bone);
+}
+dialog::backdrop {
+  background: rgba(4, 5, 4, 0.76);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.dialog-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+.dialog-head h2 { margin-top: 5px; font-size: 1.7rem; }
+.dialog-close {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border: 1px solid var(--line-2);
+  background: transparent;
+  color: var(--muted);
+}
+.dialog-close:hover { border-color: var(--copper); color: var(--copper-2); }
+.dialog-close svg { width: 16px; height: 16px; }
+.dialog-body { padding: 22px; }
+.dialog-intro {
+  margin-bottom: 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.65;
+}
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; min-width: 0; }
+.field label {
+  color: var(--bone-2);
+  font: 500 0.6rem/1.3 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.field .optional { color: var(--dim); font-weight: 400; }
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 11px 12px;
+  border: 1px solid var(--line-2);
+  border-radius: 2px;
+  background: var(--ink-2);
+  color: var(--bone);
+  font: 0.86rem/1.5 var(--sans);
+}
+.field textarea { min-height: 132px; resize: vertical; }
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--copper);
+  box-shadow: 0 0 0 1px var(--copper);
+}
+.field input::placeholder,
+.field textarea::placeholder { color: var(--dim); }
+.field-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--dim);
+  font-size: 0.64rem;
+  line-height: 1.5;
+}
+.field-foot span:first-child { max-width: 72%; }
+.field-check { flex-direction: row; align-items: flex-start; gap: 10px; }
+.field-check input {
+  width: 18px;
+  height: 18px;
+  min-height: 0;
+  margin-top: 2px;
+  flex: none;
+  accent-color: var(--copper);
+}
+.field-check label {
+  color: var(--muted);
+  font: 0.76rem/1.5 var(--sans);
+  letter-spacing: 0;
+  text-transform: none;
+}
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.form-status { min-height: 1.2em; margin-top: 12px; color: var(--patina-2); font-size: 0.76rem; line-height: 1.6; }
+.form-status:empty { display: none; }
+.form-note { margin-top: 10px; color: var(--dim); font-size: 0.66rem; line-height: 1.6; }
+.form-note a { color: var(--copper-2); text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1080px) {
+  .desktop-nav { display: none; }
+  .nav-toggle { display: grid; }
+  .header-cta { display: none; }
+  .header-inner { min-height: 68px; }
+}
+
+@media (max-width: 960px) {
+  .hero-grid { grid-template-columns: minmax(0, 1fr); align-items: start; }
+  .ledger { max-width: 560px; }
+  .principles-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .section-head { grid-template-columns: 1fr; gap: 8px; }
+  .sec-no { padding-top: 0; }
+  .service-grid { grid-template-columns: 1fr; }
+  .method-grid { grid-template-columns: minmax(0, 1fr); }
+  .evidence-grid { grid-template-columns: minmax(0, 1fr); }
+  .tier-grid { grid-template-columns: 1fr; }
+  .note-grid { grid-template-columns: 1fr; gap: 28px; }
+  .contact-panel { grid-template-columns: 1fr; }
+  .contact-card { padding-left: 0; padding-top: 24px; border-left: 0; border-top: 1px solid var(--line); }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .footer-brand { grid-column: 1 / -1; }
+}
+
+@media (max-width: 780px) {
+  .program-grid { grid-template-columns: 1fr; }
+  .address-row { grid-template-columns: 1fr; gap: 10px; }
+  .address-row .badge { justify-self: start; }
+  .address-actions { justify-self: start; }
+  .filter-count { width: 100%; margin-left: 0; padding-top: 4px; }
+}
+
+@media (max-width: 620px) {
+  .topline-inner { font-size: 0.54rem; letter-spacing: 0.1em; }
+  h1 { font-size: clamp(2.5rem, 11.5vw, 3.6rem); }
+  .actions .btn { flex: 1 1 100%; }
+  .principles-grid { grid-template-columns: 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .dialog-head, .dialog-body { padding-left: 18px; padding-right: 18px; }
+  .field-foot span:first-child { max-width: 100%; }
+  .field-foot { flex-direction: column; gap: 4px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ---------- Print ---------- */
+
+@media print {
+  body { background: #fff; color: #111; }
+  body::before, body::after { display: none; }
+  .topline, .site-header, .mobile-nav, .actions, .filter-bar, .report-link,
+  .copy-btn, .icon-link, dialog, .skip-link, .site-footer .footer-col { display: none !important; }
+  .wrap { max-width: none; padding: 0; }
+  h1, h2, h3, h4, .brand-name { color: #111; }
+  a { color: #111; text-decoration: underline; }
+  .section, .contact, .site-footer { padding: 20px 0; border-color: #bbb; }
+  .ledger, .program, .tier, .service, .severity, .code-card, .contact-panel {
+    background: #fff !important;
+    border-color: #bbb !important;
+  }
+  .program-grid, .service-grid, .tier-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body id="top">
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<div class="topline">
+  <div class="wrap topline-inner">
+    <span>TKO Labs &middot; Security research practice of Persistent Solutions LLC</span>
+    <span><a href="mailto:security@tkolabs.us">security@tkolabs.us</a></span>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="/" aria-label="TKO Labs home">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <rect x="1" y="1" width="30" height="30" rx="2" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".55"/>
+        <path d="M8 9.5h16M16 9.5v14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square"/>
+        <rect x="21" y="20" width="5" height="5" fill="#7fb8a6"/>
+      </svg>
+      <span>
+        <span class="brand-name">TKO <em>Labs</em></span>
+        <span class="brand-sub">Security research</span>
+      </span>
+    </a>
+
+    <nav class="desktop-nav" aria-label="Primary">
+      <a href="#what-we-do">Practice</a>
+      <a href="#programs">Programs</a>
+      <a href="#method">Method</a>
+      <a href="#evidence">Evidence</a>
+      <a href="#staking">Staking</a>
+      <a href="#contracts">Contracts</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+
+    <a class="btn btn-primary btn-small header-cta js-report" href="mailto:security@tkolabs.us?subject=TKO%20Labs%20report%20-%20Core%20Platform" data-program="core">Report a finding</a>
+
+    <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu">
+      <span class="nav-toggle-lines" aria-hidden="true"></span>
+    </button>
+  </div>
+
+  <div class="mobile-nav" id="mobile-nav" hidden>
+    <nav class="wrap" aria-label="Mobile">
+      <a href="#what-we-do">Practice</a>
+      <a href="#programs">Programs</a>
+      <a href="#method">Method</a>
+      <a href="#evidence">Evidence</a>
+      <a href="#staking">Staking</a>
+      <a href="#contracts">Contracts</a>
+      <a href="#faq">FAQ</a>
+      <a class="btn btn-primary js-report" href="mailto:security@tkolabs.us?subject=TKO%20Labs%20report%20-%20Core%20Platform" data-program="core">Report a finding</a>
+      <a class="mobile-email" href="mailto:security@tkolabs.us">security@tkolabs.us</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" tabindex="-1">
+
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="eyebrow-rule" aria-hidden="true"></span>Security research practice &middot; St. Louis, Missouri</p>
+        <h1 id="hero-title">Security work that <em>can be checked.</em></h1>
+        <p class="lead">TKO Labs runs paid bug bounty programs and smart-contract audits for the TKO stack. Every decision on a submission is written to a hash-linked evidence chain, so the record of what was found, reviewed, and paid can be verified after the fact.</p>
+        <div class="actions">
+          <a class="btn btn-primary js-report" href="mailto:security@tkolabs.us?subject=TKO%20Labs%20report%20-%20Core%20Platform" data-program="core">
+            Report a finding
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+          </a>
+          <a class="btn btn-ghost" href="#programs">See open programs</a>
+        </div>
+        <p class="hero-note"><span class="marker" aria-hidden="true"></span>Send a summary first. We confirm scope and a secure channel before you share exploit details.</p>
+      </div>
+
+      <aside class="ledger" aria-label="Program ledger">
+        <div class="ledger-head">
+          <span class="label">Program ledger</span>
+          <span class="badge"><span class="dot" aria-hidden="true"></span>Sepolia testnet</span>
+        </div>
+        <dl class="ledger-rows">
+          <div><dt>Open programs</dt><dd>04</dd></div>
+          <div><dt>Aggregate maximum</dt><dd>$115,000</dd></div>
+          <div><dt>Review activation</dt><dd>500&ndash;1,000 PCENT</dd></div>
+          <div><dt>Payout asset</dt><dd>PCENT</dd></div>
+        </dl>
+        <div class="chain" role="img" aria-label="Three hash-linked evidence links: submitted, reviewing, and paid.">
+          <div class="chain-link"><span class="chain-state">01 / Submitted</span><code>3c9e&hellip;a71b</code></div>
+          <div class="chain-link"><span class="chain-state">02 / Reviewing</span><code>80d2&hellip;4f6c</code></div>
+          <div class="chain-link"><span class="chain-state">03 / Paid</span><code>d41f&hellip;9b02</code></div>
+        </div>
+        <p class="ledger-foot">Each transition is SHA-256 linked to the previous link. <span class="mono">Sample values.</span></p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="principles" aria-labelledby="principles-title">
+    <h2 class="sr-only" id="principles-title">Operating principles</h2>
+    <div class="wrap principles-grid">
+      <div class="principle">
+        <div class="p-mark" aria-hidden="true"></div>
+        <h3>Scope before work</h3>
+        <p>Every program publishes its assets, impacts, and exclusions. Test inside them.</p>
+      </div>
+      <div class="principle">
+        <div class="p-mark" aria-hidden="true"></div>
+        <h3>Reproduce before payout</h3>
+        <p>A report needs a clear path to impact. We confirm it before severity is set.</p>
+      </div>
+      <div class="principle">
+        <div class="p-mark" aria-hidden="true"></div>
+        <h3>Evidence after decision</h3>
+        <p>Status changes are written to a hash-linked chain, not edited in place.</p>
+      </div>
+      <div class="principle">
+        <div class="p-mark" aria-hidden="true"></div>
+        <h3>Corrections stay public</h3>
+        <p>When re-verification changes a conclusion, the correction remains part of the record.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="what-we-do" aria-labelledby="what-title">
+    <div class="wrap">
+      <header class="section-head">
+        <p class="sec-no">01 / Practice</p>
+        <div class="sec-title">
+          <h2 id="what-title">Audit, bounty, and verification under one roof.</h2>
+          <p>The lab reviews code, runs the bounty platform, and keeps the evidence that connects a decision to its payment. The three functions share one record.</p>
+        </div>
+      </header>
+
+      <div class="service-grid">
+        <article class="service">
+          <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true" focusable="false">
+            <path d="M12 3l7 3v5c0 4.6-3 8.1-7 10-4-1.9-7-5.4-7-10V6l7-3z"/>
+            <path d="M9 12l2 2 4-4"/>
+          </svg>
+          <p class="label">Scoped engagement</p>
+          <h3>Smart-contract audits</h3>
+          <p>Manual review of Solidity contracts, privilege paths, accounting, and upgrade surfaces. Findings include severity, exploitability, a reproduction path, and remediation guidance.</p>
+          <p class="service-foot">Private brief &middot; quoted per scope</p>
+        </article>
+
+        <article class="service">
+          <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true" focusable="false">
+            <path d="M8 8.5a4 4 0 018 0v7a4 4 0 01-8 0v-7z"/>
+            <path d="M4 10h4M16 10h4M4 14h4M16 14h4M6.5 6.5l2 2M17.5 6.5l-2 2M6.5 17.5l2-2M17.5 17.5l-2-2"/>
+          </svg>
+          <p class="label">Open programs</p>
+          <h3>Paid bug bounties</h3>
+          <p>Four open programs across the platform, tokens, and vault contracts. Researchers submit findings and are paid in PCENT under the published terms.</p>
+          <p class="service-foot">Four scopes &middot; $115,000 aggregate</p>
+        </article>
+
+        <article class="service">
+          <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true" focusable="false">
+            <path d="M9.5 14.5l5-5"/>
+            <path d="M7.8 11.2l-1.5 1.5a3.4 3.4 0 004.8 4.8l1.5-1.5"/>
+            <path d="M16.2 12.8l1.5-1.5a3.4 3.4 0 00-4.8-4.8l-1.5 1.5"/>
+          </svg>
+          <p class="label">Integrity chain</p>
+          <h3>Evidence and verification</h3>
+          <p>Every submission transition is written to a SHA-256 hash chain. Break the chain and the submission is invalidated and removed from payout eligibility.</p>
+          <p class="service-foot">Hash-linked &middot; publicly verifiable</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="programs" aria-labelledby="programs-title">
+    <div class="wrap">
+      <header class="section-head">
+        <p class="sec-no">02 / Programs</p>
+        <div class="sec-title">
+          <h2 id="programs-title">Four open scopes.</h2>
+          <p>Maximum bounties total $115,000. Every program publishes what is in scope before testing begins. The review activation fee is separate from any bounty.</p>
+        </div>
+      </header>
+
+      <div class="filter-bar" role="group" aria-label="Filter programs">
+        <button class="chip" type="button" data-filter="all" aria-pressed="true">All <span>4</span></button>
+        <button class="chip" type="button" data-filter="platform" aria-pressed="false">Platform <span>1</span></button>
+        <button class="chip" type="button" data-filter="contracts" aria-pressed="false">Smart contracts <span>2</span></button>
+        <button class="chip" type="button" data-filter="token" aria-pressed="false">Tokens <span>1</span></button>
+        <p class="filter-count" id="program-count" aria-live="polite">Showing 4 of 4 programs</p>
+      </div>
+
+      <div class="program-grid">
+        <article class="program" data-category="platform" aria-labelledby="p-core-title">
+          <div class="program-top"><span class="mono">P-01</span><span class="tag tag-platform">Platform</span></div>
+          <h3 id="p-core-title">TKO Labs Core Platform</h3>
+          <p>The bounty platform itself: application logic, API, authentication, session handling, and deployment configuration. Infrastructure findings must be reproducible without disrupting live service.</p>
+          <dl class="program-stats">
+            <div><dt>Max bounty</dt><dd>$50,000</dd></div>
+            <div><dt>Review activation</dt><dd>1,000 PCENT</dd></div>
+          </dl>
+          <a class="report-link js-report" href="mailto:security@tkolabs.us?subject=TKO%20Labs%20report%20-%20Core%20Platform" data-program="core">
+            Report in this program
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+          </a>
+        </article>
+
+        <article class="program" data-category="contracts" aria-labelledby="p-vault-title">
+          <div class="program-top"><span class="mono">P-02</span><span class="tag">Smart contract</span></div>
+          <h3 id="p-vault-title">Submission Vault</h3>
+          <p>Deposit, withdrawal, and accounting logic across the PCENT and JRTS vault contracts. Focus on asset custody, share accounting, and access control.</p>
+          <dl class="program-stats">
+            <div><dt>Max bounty</dt><dd>$30,000</dd></div>
+            <div><dt>Review activation</dt><dd>1,000 PCENT</dd></div>
+          </dl>
+          <div class="program-addr">
+            <span class="label">Vault</span>
+            <code>0x965d7F79507CC46aD2D9d593c3B4fF1AFfC8f323</code>
+            <button class="copy-btn" type="button" data-copy="0x965d7F79507CC46aD2D9d593c3B4fF1AFfC8f323" aria-label="Copy Submission Vault contract address">Copy</button>
+          </div>
+          <a class="report-link js-report" href="mailto:security@tkolabs.us?subject=TKO%20Labs%20report%20-%20Submission%20Vault" data-program="vault">
+            Report in this program
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+          </a>
+        </article>
+
+        <article class="program" data-category="contracts" aria-labelledby="p-pcent-title">
+          <div class="program-top"><span class="mono">P-03</span><span class="tag">Smart contract</span></div>
+          <h3 id="p-pcent-title">PCENT Token</h3>
+          <p>The Persistent Cent ERC-20, staking contract, and related vault surfaces. Supply, transfer, reward accounting, and privileged operations.</p>
+          <dl class="program-stats">
+            <div><dt>Max bounty</dt><dd>$25,000</dd></div>
+            <div><dt>Review activation</dt><dd>1,000 PCENT</dd></div>
+          </dl>
+          <div class="program-addr">
+            <span class="label">Token</span>
+            <code>0x9CF25249EDF523652021B7Feb3b8379D8EF2cf0e</code>
+            <button class="copy-btn" type="button" data-copy="0x9CF25249EDF523652021B7Feb3b8379D8EF2cf0e" aria-label="Copy PCENT token contract address">Copy</button>
+          </div>
+          <a class="report-link js-report" href="mailto:security@tkolabs.us?subject=TKO%20Labs%20report%20-%20PCENT%20Token" data-program="pcent">
+            Report in this program
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+          </a>
+        </article>
+
+        <article class="program" data-category="token" aria-labelledby="p-jrts-title">
+          <div class="program-top"><span class="mono">P-04</span><span class="tag tag-token">Token</span></div>
+          <h3 id="p-jrts-title">JRTS Token</h3>
+          <p>The JRTS token and its distribution surface. Supply controls, transfer behavior, and liquidity assumptions.</p>
+          <dl class="program-stats">
+            <div><dt>Max bounty</dt><dd>$10,000</dd></div>
+            <div><dt>Review activation</dt><dd>500 PCENT</dd></div>
+          </dl>
+          <div class="program-addr">
+            <span class="label">Token</span>
+            <code>0x8Df1b23fEDB106ab67cC06A64601Fd45Bfe16Ad2</code>
+            <button class="copy-btn" type="button" data-copy="0x8Df1b23fEDB106ab67cC06A64601Fd45Bfe16Ad2" aria-label="Copy JRTS token contract address">Copy</button>
+          </div>
+          <a class="report-link js-report" href="mailto:security@tkolabs.us?subject=TKO%20Labs%20report%20-%20JRTS%20Token" data-program="jrts">
+            Report in this program
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+          </a>
+        </article>
+      </div>
+
+      <p class="section-note">Maximum bounty is the top of the published USD range, not a guaranteed award. Final severity follows the reproduced impact. Payouts are made in PCENT under the program terms; the platform records the token amount and its USD reference. Program data compiled 25 Oct 2026 from the platform deployment record.</p>
+    </div>
+  </section>
+
+  <section class="section" id="method" aria-labelledby="method-title">
+    <div class="wrap">
+      <header class="section-head">
+        <p class="sec-no">03 / Method</p>
+        <div class="sec-title">
+          <h2 id="method-title">From report to recorded decision.</h2>
+          <p>The process is deliberately short. Scope and impact are settled before money is discussed, and every state change leaves a record.</p>
+        </div>
+      </header>
+
+      <div class="method-grid">
+        <ol class="steps">
+          <li>
+            <span class="step-no">01</span>
+            <div><h3>Scope</h3><p>Check the program&rsquo;s assets, impacts, and exclusions. If a target is ambiguous, ask before testing.</p></div>
+          </li>
+          <li>
+            <span class="step-no">02</span>
+            <div><h3>Report</h3><p>Send a summary with reproduction steps, affected addresses, and the impact you believe you can demonstrate.</p></div>
+          </li>
+          <li>
+            <span class="step-no">03</span>
+            <div><h3>Triage</h3><p>We reproduce the issue and assign severity from impact and exploitability. You receive the reasoning, not just a label.</p></div>
+          </li>
+          <li>
+            <span class="step-no">04</span>
+            <div><h3>Decision</h3><p>Accepted findings move to payout. Rejected findings receive a written reason. Both decisions are appended to the evidence chain.</p></div>
+          </li>
+          <li>
+            <span class="step-no">05</span>
+            <div><h3>Payment</h3><p>Payout is made in PCENT under the program terms. The payout transaction remains linked to the submission record.</p></div>
+          </li>
+        </ol>
+
+        <div class="severity">
+          <p class="label">Severity is set on reproduced impact</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th scope="col">Class</th><th scope="col">Typical condition</th></tr></thead>
+              <tbody>
+                <tr><td><span class="sev sev-critical" aria-hidden="true"></span>Critical</td><td>Direct loss or permanent lock of funds; protocol insolvency; unauthenticated privilege escalation.</td></tr>
+                <tr><td><span class="sev sev-high" aria-hidden="true"></span>High</td><td>Conditional loss of funds; bypass of a core invariant; privileged action without authorization.</td></tr>
+                <tr><td><span class="sev sev-medium" aria-hidden="true"></span>Medium</td><td>Bounded impact, griefing, or denial of service with a practical recovery path.</td></tr>
+                <tr><td><span class="sev sev-low" aria-hidden="true"></span>Low</td><td>Information exposure, hardening gaps, or issues requiring unrealistic preconditions.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="severity-note">A theoretical issue without a path to impact is usually informational.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="evidence" aria-labelledby="evidence-title">
+    <div class="wrap">
+      <header class="section-head">
+        <p class="sec-no">04 / Evidence</p>
+        <div class="sec-title">
+          <h2 id="evidence-title">The integrity chain.</h2>
+          <p>A decision is only useful if you can check it later. Each submission carries its own chain of state transitions, hashed end to end.</p>
+        </div>
+      </header>
+
+      <div class="evidence-grid">
+        <div class="evidence-copy">
+          <p>A finding is not a static row in a database. Each status change is a link in a SHA-256 hash chain. The link contains the submission ID, transition, reviewer, a hash of the reviewer&rsquo;s IP, a timestamp, a hash of the justification, and the previous link&rsquo;s hash. Change any field and the link&rsquo;s self-hash changes. Break the chain and the submission is invalidated.</p>
+          <ul class="checks">
+            <li>Canonical hashing: JSON with sorted keys, SHA-256.</li>
+            <li>Allowed transitions: pending &rarr; reviewing &rarr; paid or rejected.</li>
+            <li>Reviewer IPs appear only as SHA-256 hashes.</li>
+            <li>Any change to a link breaks its self-hash and invalidates the record.</li>
+          </ul>
+          <div class="callout">
+            <span class="callout-mark" aria-hidden="true"></span>
+            <p><strong>What the chain proves.</strong> That the record was not edited after the decision. It does not prove the finding itself is correct; review and reproduction do that.</p>
+          </div>
+        </div>
+
+        <figure class="code-card">
+          <div class="code-head">
+            <span class="label">Example link</span>
+            <span class="mono">SHA-256 / JSON</span>
+          </div>
+          <pre><code>{
+  <span class="k">"submission_id"</span>: <span class="n">1042</span>,
+  <span class="k">"transition"</span>: <span class="s">"reviewing&rarr;paid"</span>,
+  <span class="k">"actor"</span>: <span class="s">"reviewer:tk"</span>,
+  <span class="k">"actor_ip_hash"</span>: <span class="s">"9f2c&hellip;"</span>,
+  <span class="k">"timestamp"</span>: <span class="s">"2026-10-19T14:02:11+00:00"</span>,
+  <span class="k">"justification_hash"</span>: <span class="s">"b7a1&hellip;"</span>,
+  <span class="k">"previous_hash"</span>: <span class="s">"3c9e&hellip;a71b"</span>,
+  <span class="k">"self_hash"</span>: <span class="s">"d41f&hellip;9b02"</span>
+}</code></pre>
+          <div class="code-status"><span class="dot" aria-hidden="true"></span>Example result &middot; chain intact</div>
+          <figcaption>Hash values shortened for display. The platform returns the full links and a verification result for each submission.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="staking" aria-labelledby="staking-title">
+    <div class="wrap">
+      <header class="section-head">
+        <p class="sec-no">05 / Staking</p>
+        <div class="sec-title">
+          <h2 id="staking-title">Review priority, staked in PCENT.</h2>
+          <p>Researchers can stake PCENT to change queue priority and payout terms. Staking is optional. The structure below is published on the platform.</p>
+        </div>
+      </header>
+
+      <div class="tier-grid">
+        <article class="tier">
+          <p class="tier-name">Base</p>
+          <h3>1,000,000 <span>PCENT</span></h3>
+          <ul class="ticks">
+            <li>Standard review queue</li>
+            <li>Standard payout terms</li>
+            <li>Public program briefs</li>
+          </ul>
+        </article>
+        <article class="tier">
+          <p class="tier-name">Premium</p>
+          <h3>10,000,000 <span>PCENT</span></h3>
+          <ul class="ticks">
+            <li>Priority review</li>
+            <li>+5% payout bonus</li>
+            <li>Private programs</li>
+          </ul>
+        </article>
+        <article class="tier">
+          <p class="tier-name">Elite</p>
+          <h3>100,000,000 <span>PCENT</span></h3>
+          <ul class="ticks">
+            <li>Front-of-queue review</li>
+            <li>+10% payout bonus</li>
+            <li>Private programs</li>
+            <li>Direct reviewer channel</li>
+          </ul>
+        </article>
+      </div>
+
+      <p class="section-note">Staking is currently on the Sepolia testnet. Testnet tokens have no market value. Benefits apply to eligible submissions under the program terms. Staking contract: <code>0x3c45e911772aF2D20cEDa24dC61e8a4994c4d565</code> <button class="copy-btn" type="button" data-copy="0x3c45e911772aF2D20cEDa24dC61e8a4994c4d565" aria-label="Copy PCENT staking contract address">Copy</button></p>
+    </div>
+  </section>
+
+  <section class="section" id="contracts" aria-labelledby="contracts-title">
+    <div class="wrap">
+      <header class="section-head">
+        <p class="sec-no">06 / Contracts</p>
+        <div class="sec-title">
+          <h2 id="contracts-title">Published addresses.</h2>
+          <p>Reproduced from the platform&rsquo;s deployment record. All five are Sepolia testnet addresses. Do not send mainnet funds.</p>
+        </div>
+      </header>
+
+      <ul class="address-list">
+        <li class="address-row">
+          <div class="address-name"><span class="mono">01</span><div><h3>PCENT token</h3><p>ERC-20</p></div></div>
+          <code class="address">0x9CF25249EDF523652021B7Feb3b8379D8EF2cf0e</code>
+          <span class="badge"><span class="dot" aria-hidden="true"></span>Sepolia</span>
+          <div class="address-actions">
+            <button class="copy-btn" type="button" data-copy="0x9CF25249EDF523652021B7Feb3b8379D8EF2cf0e" aria-label="Copy PCENT token address">Copy</button>
+            <a class="icon-link" href="https://sepolia.etherscan.io/address/0x9CF25249EDF523652021B7Feb3b8379D8EF2cf0e" target="_blank" rel="noopener noreferrer" aria-label="View PCENT token on Etherscan Sepolia (opens in a new tab)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M19 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1h5"/></svg>
+            </a>
+          </div>
+        </li>
+        <li class="address-row">
+          <div class="address-name"><span class="mono">02</span><div><h3>PCENT staking</h3><p>Staking</p></div></div>
+          <code class="address">0x3c45e911772aF2D20cEDa24dC61e8a4994c4d565</code>
+          <span class="badge"><span class="dot" aria-hidden="true"></span>Sepolia</span>
+          <div class="address-actions">
+            <button class="copy-btn" type="button" data-copy="0x3c45e911772aF2D20cEDa24dC61e8a4994c4d565" aria-label="Copy PCENT staking address">Copy</button>
+            <a class="icon-link" href="https://sepolia.etherscan.io/address/0x3c45e911772aF2D20cEDa24dC61e8a4994c4d565" target="_blank" rel="noopener noreferrer" aria-label="View PCENT staking on Etherscan Sepolia (opens in a new tab)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M19 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1h5"/></svg>
+            </a>
+          </div>
+        </li>
+        <li class="address-row">
+          <div class="address-name"><span class="mono">03</span><div><h3>Vault (PCENT)</h3><p>Vault</p></div></div>
+          <code class="address">0x965d7F79507CC46aD2D9d593c3B4fF1AFfC8f323</code>
+          <span class="badge"><span class="dot" aria-hidden="true"></span>Sepolia</span>
+          <div class="address-actions">
+            <button class="copy-btn" type="button" data-copy="0x965d7F79507CC46aD2D9d593c3B4fF1AFfC8f323" aria-label="Copy PCENT vault address">Copy</button>
+            <a class="icon-link" href="https://sepolia.etherscan.io/address/0x965d7F79507CC46aD2D9d593c3B4fF1AFfC8f323" target="_blank" rel="noopener noreferrer" aria-label="View PCENT vault on Etherscan Sepolia (opens in a new tab)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M19 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1h5"/></svg>
+            </a>
+          </div>
+        </li>
+        <li class="address-row">
+          <div class="address-name"><span class="mono">04</span><div><h3>Vault (JRTS)</h3><p>Vault</p></div></div>
+          <code class="address">0x386B67993fD8B57a33acD2ff3287642765EBD613</code>
+          <span class="badge"><span class="dot" aria-hidden="true"></span>Sepolia</span>
+          <div class="address-actions">
+            <button class="copy-btn" type="button" data-copy="0x386B67993fD8B57a33acD2ff3287642765EBD613" aria-label="Copy JRTS vault address">Copy</button>
+            <a class="icon-link" href="https://sepolia.etherscan.io/address/0x386B67993fD8B57a33acD2ff3287642765EBD613" target="_blank" rel="noopener noreferrer" aria-label="View JRTS vault on Etherscan Sepolia (opens in a new tab)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M19 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1h5"/></svg>
+            </a>
+          </div>
+        </li>
+        <li class="address-row">
+          <div class="address-name"><span class="mono">05</span><div><h3>JRTS token</h3><p>Token</p></div></div>
+          <code class="address">0x8Df1b23fEDB106ab67cC06A64601Fd45Bfe16Ad2</code>
+          <span class="badge"><span class="dot" aria-hidden="true"></span>Sepolia</span>
+          <div class="address-actions">
+            <button class="copy-btn" type="button" data-copy="0x8Df1b23fEDB106ab67cC06A64601Fd45Bfe16Ad2" aria-label="Copy JRTS token address">Copy</button>
+            <a class="icon-link" href="https://sepolia.etherscan.io/address/0x8Df1b23fEDB106ab67cC06A64601Fd45Bfe16Ad2" target="_blank" rel="noopener noreferrer" aria-label="View JRTS token on Etherscan Sepolia (opens in a new tab)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M19 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1h5"/></svg>
+            </a>
+          </div>
+        </li>
+      </ul>
+
+      <p class="section-note">Confirm the network and the address before interacting. A testnet deployment can be replaced without notice. Nothing on this page is an offer to sell securities or a guarantee of payment.</p>
+    </div>
+  </section>
+
+  <section class="section" id="research" aria-labelledby="research-title">
+    <div class="wrap">
+      <header class="section-head">
+        <p class="sec-no">07 / Notes</p>
+        <div class="sec-title">
+          <h2 id="research-title">Research notes and disclosure.</h2>
+          <p>Method notes, disclosure terms, and the correction policy that keeps the record honest.</p>
+        </div>
+      </header>
+
+      <div class="note-grid">
+        <article class="note">
+          <p class="label">Method</p>
+          <h3>Proof of Behavior</h3>
+          <p>The TKO protocol&rsquo;s attestation model composes code, syscall, and memory proofs into one verifiable envelope. Our review method treats each component as a separate claim.</p>
+          <a href="mailto:security@tkolabs.us?subject=Proof%20of%20Behavior%20brief">
+            Request the brief
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+          </a>
+        </article>
+
+        <article class="note" id="disclosure">
+          <p class="label">Policy</p>
+          <h3>Disclosure</h3>
+          <p>Coordinated disclosure. The default window is 90 days from triage, agreed case by case. Tell us how you want to be credited.</p>
+          <a href="/.well-known/security.txt">
+            Read security.txt
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+          </a>
+        </article>
+
+        <article class="note">
+          <p class="label">Practice</p>
+          <h3>Corrections</h3>
+          <p>A finding is a claim under test. If re-verification changes the conclusion, the correction is published with the original record instead of replacing it quietly.</p>
+          <a href="#method">
+            How triage works
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+          </a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="faq" aria-labelledby="faq-title">
+    <div class="wrap">
+      <header class="section-head">
+        <p class="sec-no">08 / Questions</p>
+        <div class="sec-title">
+          <h2 id="faq-title">Questions researchers ask.</h2>
+          <p>If the answer is not here, send the question with your report. It is read by the lab.</p>
+        </div>
+      </header>
+
+      <div class="faq">
+        <details>
+          <summary>Who can submit a finding?<span class="faq-mark" aria-hidden="true"></span></summary>
+          <div class="faq-body"><p>Anyone. You do not need a prior relationship with TKO Labs. Send a clear summary with reproduction steps and the program you are reporting under.</p></div>
+        </details>
+        <details>
+          <summary>What is in scope?<span class="faq-mark" aria-hidden="true"></span></summary>
+          <div class="faq-body"><p>Each program card names its target surface. The core program covers the web application, API, authentication, and deployment configuration. The token and vault programs cover their contracts. Testing must not disrupt live service or third-party systems.</p></div>
+        </details>
+        <details>
+          <summary>Do I need PCENT to submit?<span class="faq-mark" aria-hidden="true"></span></summary>
+          <div class="faq-body"><p>You need the review activation fee published on the program: 1,000 PCENT, or 500 PCENT for JRTS. Staking is optional. It changes queue priority and payout terms but is not required to file a report.</p></div>
+        </details>
+        <details>
+          <summary>How are payouts made?<span class="faq-mark" aria-hidden="true"></span></summary>
+          <div class="faq-body"><p>Accepted findings are paid in PCENT under the program terms. The platform records the payout transaction against the submission, and the decision remains in the evidence chain.</p></div>
+        </details>
+        <details>
+          <summary>Are these mainnet contracts?<span class="faq-mark" aria-hidden="true"></span></summary>
+          <div class="faq-body"><p>No. The addresses published here are Sepolia testnet deployments. Testnet assets have no market value. Do not send mainnet funds.</p></div>
+        </details>
+        <details>
+          <summary>How should I send a sensitive report?<span class="faq-mark" aria-hidden="true"></span></summary>
+          <div class="faq-body"><p>Send a summary first and ask for a secure channel. We will confirm scope and the channel before you share exploit details. Never send private keys, seed phrases, or third-party personal data.</p></div>
+        </details>
+        <details>
+          <summary>What if my report is rejected?<span class="faq-mark" aria-hidden="true"></span></summary>
+          <div class="faq-body"><p>You receive a written reason. The rejection is appended to the evidence chain. If you have new reproduction evidence, reply to the thread and we will re-open triage.</p></div>
+        </details>
+        <details>
+          <summary>Do you take private audits?<span class="faq-mark" aria-hidden="true"></span></summary>
+          <div class="faq-body"><p>Yes. Private audits are scoped and quoted separately. Start with a short email describing the codebase, timeline, and what you need reviewed.</p></div>
+        </details>
+      </div>
+
+      <p class="faq-foot">Still unsure? Email <a href="mailto:security@tkolabs.us">security@tkolabs.us</a>.</p>
+    </div>
+  </section>
+
+  <section class="contact" id="contact" aria-labelledby="contact-title">
+    <div class="wrap">
+      <div class="contact-panel">
+        <div class="contact-copy">
+          <p class="eyebrow"><span class="eyebrow-rule" aria-hidden="true"></span>Start here</p>
+          <h2 id="contact-title">Send the summary first.</h2>
+          <p>Tell us the program, the affected surface, and the impact you believe you can demonstrate. We will confirm scope and a secure channel before you share exploit details.</p>
+          <div class="actions">
+            <a class="btn btn-primary js-report" href="mailto:security@tkolabs.us?subject=TKO%20Labs%20report%20-%20Core%20Platform" data-program="core">
+              Compose a report
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+            </a>
+            <button class="btn btn-ghost" type="button" data-copy="security@tkolabs.us">Copy email address</button>
+          </div>
+          <noscript><p class="noscript">JavaScript is off. The report form is unavailable; email <a href="mailto:security@tkolabs.us">security@tkolabs.us</a> directly.</p></noscript>
+        </div>
+
+        <div class="contact-card">
+          <p class="label">Direct line</p>
+          <a class="contact-email" href="mailto:security@tkolabs.us">security@tkolabs.us</a>
+          <dl class="contact-meta">
+            <div><dt>Entity</dt><dd>Persistent Solutions LLC</dd></div>
+            <div><dt>Location</dt><dd>St. Louis, Missouri</dd></div>
+            <div><dt>Disclosure</dt><dd><a href="/.well-known/security.txt">security.txt</a></dd></div>
+            <div><dt>Sensitive reports</dt><dd>Ask for a secure channel first.</dd></div>
+          </dl>
+          <p class="contact-note">No analytics, cookies, or third-party scripts on this page.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div class="footer-brand">
+      <a class="brand" href="/" aria-label="TKO Labs home">
+        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <rect x="1" y="1" width="30" height="30" rx="2" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".55"/>
+          <path d="M8 9.5h16M16 9.5v14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square"/>
+          <rect x="21" y="20" width="5" height="5" fill="#7fb8a6"/>
+        </svg>
+        <span>
+          <span class="brand-name">TKO <em>Labs</em></span>
+          <span class="brand-sub">Security research</span>
+        </span>
+      </a>
+      <p>The security research practice of Persistent Solutions LLC. Paid bounties, smart-contract audits, and hash-linked evidence.</p>
+    </div>
+
+    <div class="footer-col">
+      <span class="label">Site</span>
+      <nav aria-label="Footer site links">
+        <a href="#what-we-do">Practice</a>
+        <a href="#programs">Programs</a>
+        <a href="#method">Method</a>
+        <a href="#evidence">Evidence</a>
+        <a href="#staking">Staking</a>
+        <a href="#contracts">Contracts</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+    </div>
+
+    <div class="footer-col">
+      <span class="label">Elsewhere</span>
+      <nav aria-label="External links">
+        <a href="https://persistent-solutions.com/" target="_blank" rel="noopener noreferrer">Persistent Solutions</a>
+        <a href="https://justrunthatshit.com/" target="_blank" rel="noopener noreferrer">TKO protocol</a>
+        <a href="/.well-known/security.txt">security.txt</a>
+        <a href="mailto:security@tkolabs.us">Email the lab</a>
+        <a href="#top">Back to top</a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="wrap footer-bottom">
+    <p>&copy; <span id="year">2026</span> Persistent Solutions LLC. TKO Labs is the security research practice of Persistent Solutions LLC.</p>
+    <p>Contract addresses are Sepolia testnet only. Nothing here is an offer of securities or a guarantee of payment. Bounties and staking terms are governed by the applicable program terms.</p>
+  </div>
+</footer>
+
+<dialog id="report-dialog" aria-labelledby="report-title" aria-describedby="report-intro">
+  <div class="dialog-shell">
+    <header class="dialog-head">
+      <div>
+        <p class="label">Report a finding</p>
+        <h2 id="report-title">Compose a report</h2>
+      </div>
+      <button class="dialog-close" type="button" data-close-dialog aria-label="Close report form">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </header>
+
+    <div class="dialog-body">
+      <p class="dialog-intro" id="report-intro">This form prepares an email in your client. Nothing is sent to a server from this page. For sensitive reports, ask for a secure channel before sharing exploit details.</p>
+
+      <form id="report-form">
+        <div class="form-grid">
+          <div class="field">
+            <label for="f-name">Your name</label>
+            <input id="f-name" name="name" type="text" autocomplete="name" maxlength="120" required>
+          </div>
+          <div class="field">
+            <label for="f-email">Email</label>
+            <input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="200" required>
+          </div>
+          <div class="field">
+            <label for="f-program">Program</label>
+            <select id="f-program" name="program" required>
+              <option value="core">TKO Labs Core Platform — $50,000</option>
+              <option value="vault">Submission Vault — $30,000</option>
+              <option value="pcent">PCENT Token — $25,000</option>
+              <option value="jrts">JRTS Token — $10,000</option>
+              <option value="private">Private audit / other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="f-severity">Severity</label>
+            <select id="f-severity" name="severity" required>
+              <option value="Unsure">Unsure</option>
+              <option value="Critical">Critical</option>
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+              <option value="Informational">Informational</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="f-summary">One-line summary</label>
+          <input id="f-summary" name="summary" type="text" maxlength="160" required placeholder="e.g. Share accounting can be inflated through a reentrant deposit">
+        </div>
+
+        <div class="field">
+          <label for="f-impact">Impact and reproduction</label>
+          <textarea id="f-impact" name="impact" rows="6" maxlength="4000" required placeholder="What can an attacker do? Which contract or endpoint? What are the steps?"></textarea>
+          <div class="field-foot">
+            <span>Do not include live keys, seed phrases, or third-party personal data.</span>
+            <span class="mono" id="impact-count">0 / 4,000</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="f-poc">Proof-of-concept link <span class="optional">(optional)</span></label>
+          <input id="f-poc" name="poc" type="url" maxlength="500" placeholder="https://...">
+        </div>
+
+        <div class="field field-check">
+          <input id="f-scope" name="scope" type="checkbox" required>
+          <label for="f-scope">I confirm this report is within the published scope of the selected program.</label>
+        </div>
+
+        <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+
+        <div class="form-actions">
+          <button class="btn btn-primary" type="submit">Open email draft</button>
+          <button class="btn btn-ghost" type="button" id="copy-report">Copy report text</button>
+          <button class="btn btn-quiet" type="button" data-close-dialog>Cancel</button>
+        </div>
+
+        <p class="form-note">Long reports may be truncated by your email client. If the draft is cut off, use <strong>Copy report text</strong> and paste it into an email to <a href="mailto:security@tkolabs.us">security@tkolabs.us</a>.</p>
+      </form>
+    </div>
+  </div>
+</dialog>
+
+<p class="sr-only" id="copy-status" aria-live="polite"></p>
+
+<script>
+(function () {
+  "use strict";
+
+  function $(selector, root) { return (root || document).querySelector(selector); }
+  function $$(selector, root) { return Array.prototype.slice.call((root || document).querySelectorAll(selector)); }
+
+  /* Header state */
+  var header = $(".site-header");
+  function onScroll() {
+    if (header) header.classList.toggle("is-scrolled", window.scrollY > 8);
+  }
+  onScroll();
+  window.addEventListener("scroll", onScroll, { passive: true });
+
+  /* Mobile navigation */
+  var navToggle = $("#nav-toggle");
+  var mobileNav = $("#mobile-nav");
+  function setNav(open) {
+    if (!navToggle || !mobileNav) return;
+    navToggle.setAttribute("aria-expanded", open ? "true" : "false");
+    navToggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    mobileNav.hidden = !open;
+  }
+  if (navToggle && mobileNav) {
+    navToggle.addEventListener("click", function () { setNav(mobileNav.hidden); });
+    $$("a", mobileNav).forEach(function (link) {
+      link.addEventListener("click", function () { setNav(false); });
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && !mobileNav.hidden) {
+        setNav(false);
+        navToggle.focus();
+      }
+    });
+    document.addEventListener("click", function (event) {
+      if (!mobileNav.hidden && header && !header.contains(event.target)) setNav(false);
+    });
+  }
+
+  /* Scrollspy for the desktop navigation */
+  var spyLinks = $$(".desktop-nav a[href^='#']");
+  var spySections = spyLinks.map(function (link) {
+    var id = link.getAttribute("href").slice(1);
+    return document.getElementById(id);
+  }).filter(Boolean);
+  if ("IntersectionObserver" in window && spySections.length) {
+    var spy = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        spyLinks.forEach(function (link) {
+          link.classList.toggle("is-active", link.getAttribute("href") === "#" + entry.target.id);
+        });
+      });
+    }, { rootMargin: "-42% 0px -54% 0px", threshold: 0 });
+    spySections.forEach(function (section) { spy.observe(section); });
+  }
+
+  /* Program filter */
+  var chips = $$(".chip");
+  var programs = $$(".program");
+  var programCount = $("#program-count");
+  function applyFilter(category) {
+    var shown = 0;
+    chips.forEach(function (chip) {
+      chip.setAttribute("aria-pressed", chip.getAttribute("data-filter") === category ? "true" : "false");
+    });
+    programs.forEach(function (card) {
+      var visible = category === "all" || card.getAttribute("data-category") === category;
+      card.hidden = !visible;
+      if (visible) shown += 1;
+    });
+    if (programCount) programCount.textContent = "Showing " + shown + " of " + programs.length + " programs";
+  }
+  chips.forEach(function (chip) {
+    chip.addEventListener("click", function () { applyFilter(chip.getAttribute("data-filter")); });
+  });
+
+  /* Clipboard helpers */
+  var copyStatus = $("#copy-status");
+  function announce(message) {
+    if (copyStatus) copyStatus.textContent = message;
+  }
+  function legacyCopy(text) {
+    var area = document.createElement("textarea");
+    area.value = text;
+    area.setAttribute("readonly", "");
+    area.style.position = "fixed";
+    area.style.top = "-1000px";
+    area.style.opacity = "0";
+    document.body.appendChild(area);
+    area.select();
+    var ok = false;
+    try { ok = document.execCommand("copy"); } catch (error) { ok = false; }
+    document.body.removeChild(area);
+    return ok;
+  }
+  function copyText(text, done) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(legacyCopy(text)); });
+    } else {
+      done(legacyCopy(text));
+    }
+  }
+  $$("[data-copy]").forEach(function (button) {
+    button.addEventListener("click", function () {
+      var text = button.getAttribute("data-copy");
+      copyText(text, function (ok) {
+        var original = button.getAttribute("data-label") || button.textContent;
+        button.setAttribute("data-label", original);
+        button.textContent = ok ? "Copied" : "Select";
+        button.classList.toggle("is-copied", ok);
+        announce(ok ? "Copied to clipboard." : "Copy failed. Select the text and copy it manually.");
+        window.setTimeout(function () {
+          button.textContent = original;
+          button.classList.remove("is-copied");
+          announce("");
+        }, 1800);
+      });
+    });
+  });
+
+  /* Report dialog */
+  var dialog = $("#report-dialog");
+  var form = $("#report-form");
+  var formStatus = $("#form-status");
+  var programSelect = $("#f-program");
+  var supportsDialog = !!(dialog && typeof dialog.showModal === "function");
+  var lastTrigger = null;
+
+  function openReport(program) {
+    if (!supportsDialog) return false;
+    if (program && programSelect) {
+      var found = false;
+      Array.prototype.forEach.call(programSelect.options, function (option) {
+        if (option.value === program) found = true;
+      });
+      if (found) programSelect.value = program;
+    }
+    if (formStatus) formStatus.textContent = "";
+    dialog.showModal();
+    var nameField = $("#f-name");
+    if (nameField) window.setTimeout(function () { nameField.focus(); }, 30);
+    return true;
+  }
+
+  $$(".js-report").forEach(function (link) {
+    link.addEventListener("click", function (event) {
+      if (openReport(link.getAttribute("data-program"))) {
+        event.preventDefault();
+        lastTrigger = (link.closest && link.closest("#mobile-nav")) ? navToggle : link;
+      }
+    });
+  });
+
+  if (dialog) {
+    $$("[data-close-dialog]", dialog).forEach(function (button) {
+      button.addEventListener("click", function () { dialog.close(); });
+    });
+    dialog.addEventListener("click", function (event) {
+      if (event.target === dialog) dialog.close();
+    });
+    dialog.addEventListener("close", function () {
+      if (formStatus) formStatus.textContent = "";
+      if (lastTrigger && document.contains(lastTrigger)) lastTrigger.focus();
+    });
+  }
+
+  function fieldValue(name) {
+    var field = form && form.elements[name];
+    return field ? String(field.value || "").trim() : "";
+  }
+  function selectedLabel(select) {
+    if (!select || select.selectedIndex < 0) return "";
+    return select.options[select.selectedIndex].textContent.replace(/\s+/g, " ").trim();
+  }
+  function buildReport() {
+    var program = selectedLabel(programSelect);
+    var severity = fieldValue("severity") || "Unsure";
+    var summary = fieldValue("summary");
+    var impact = fieldValue("impact");
+    var name = fieldValue("name");
+    var email = fieldValue("email");
+    var poc = fieldValue("poc");
+    var subject = "[TKO Labs] " + program + " — " + severity + " — " + (summary || "Finding report");
+    var lines = [
+      "TKO Labs — Finding report",
+      "=========================",
+      "",
+      "Name: " + name,
+      "Email: " + email,
+      "Program: " + program,
+      "Severity: " + severity,
+      "Summary: " + summary,
+      "",
+      "Impact and reproduction",
+      "-----------------------",
+      impact,
+      "",
+      "Proof-of-concept",
+      "----------------",
+      poc || "(none provided)",
+      "",
+      "Scope: confirmed within the published program scope.",
+      "",
+      "Sent from the tkolabs.us report form."
+    ];
+    return { subject: subject, body: lines.join("\n"), summary: summary, impact: impact };
+  }
+
+  if (form && dialog) {
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      if (typeof form.reportValidity === "function" && !form.reportValidity()) return;
+      var report = buildReport();
+      if (formStatus) {
+        formStatus.textContent = report.body.length > 1600
+          ? "Draft is longer than most email clients handle. If it arrives truncated, use Copy report text."
+          : "Opening your email client. Nothing is sent until you send the email.";
+      }
+      window.location.href = "mailto:security@tkolabs.us?subject=" + encodeURIComponent(report.subject) + "&body=" + encodeURIComponent(report.body);
+    });
+
+    var copyReport = $("#copy-report");
+    if (copyReport) {
+      copyReport.addEventListener("click", function () {
+        var report = buildReport();
+        if (!report.summary || !report.impact) {
+          if (formStatus) formStatus.textContent = "Add a summary and impact before copying the report.";
+          return;
+        }
+        copyText(report.body, function (ok) {
+          if (formStatus) {
+            formStatus.textContent = ok
+              ? "Report copied. Paste it into an email to security@tkolabs.us."
+              : "Copy failed. Select the text in the form and copy it manually.";
+          }
+        });
+      });
+    }
+  }
+
+  /* Impact character counter */
+  var impactField = $("#f-impact");
+  var impactCount = $("#impact-count");
+  if (impactField && impactCount) {
+    var updateCount = function () {
+      impactCount.textContent = impactField.value.length.toLocaleString() + " / 4,000";
+    };
+    impactField.addEventListener("input", updateCount);
+    updateCount();
+  }
+
+  /* Current year */
+  var year = $("#year");
+  if (year) year.textContent = String(new Date().getFullYear());
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,5 @@
+Contact: mailto:security@tkolabs.us
+Expires: 2027-10-25T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://tkolabs.us/.well-known/security.txt
+Policy: https://tkolabs.us/#disclosure
